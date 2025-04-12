@@ -64,11 +64,13 @@ fun CallContent(
       }
 
       CallButton(
-        onClick = viewModel::connectCall
+        onClick = audioProcessor::recordAudio,
+        text = "Record"
       )
 
       CallButton(
-        onClick = audioProcessor::recordAudio
+        onClick = audioProcessor::stopRecording,
+        text = "Stop"
       )
 
     }
