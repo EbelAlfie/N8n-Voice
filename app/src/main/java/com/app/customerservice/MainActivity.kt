@@ -10,11 +10,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import com.app.customerservice.component.CallButton
+import com.app.customerservice.modules.AudioProcessor
 import com.app.customerservice.ui.theme.CustomerServiceTheme
 
 class MainActivity : ComponentActivity() {
 
   private val viewModel: VoiceViewModel by lazy { VoiceViewModel(applicationContext) }
+
+  private val audioProcessor by lazy { AudioProcessor() }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -26,7 +29,7 @@ class MainActivity : ComponentActivity() {
     enableEdgeToEdge()
     setContent {
       CustomerServiceTheme {
-        CallContent(viewModel)
+        CallContent(viewModel, audioProcessor)
       }
     }
   }

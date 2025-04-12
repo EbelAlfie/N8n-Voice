@@ -20,11 +20,13 @@ import com.app.customerservice.CallState.Connecting
 import com.app.customerservice.CallState.Error
 import com.app.customerservice.component.CallButton
 import com.app.customerservice.component.DialogContent
+import com.app.customerservice.modules.AudioProcessor
 import kotlinx.coroutines.delay
 
 @Composable
 fun CallContent(
-  viewModel: VoiceViewModel
+  viewModel: VoiceViewModel,
+  audioProcessor: AudioProcessor
 ) {
   val callState by viewModel.callState.collectAsState()
   var showDialog by remember { mutableStateOf(false) }
@@ -64,6 +66,11 @@ fun CallContent(
       CallButton(
         onClick = viewModel::connectCall
       )
+
+      CallButton(
+        onClick = audioProcessor::recordAudio
+      )
+
     }
   }
 }
