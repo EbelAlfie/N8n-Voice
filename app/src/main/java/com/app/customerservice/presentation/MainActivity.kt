@@ -1,17 +1,11 @@
-package com.app.customerservice
+package com.app.customerservice.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Modifier
-import com.app.customerservice.component.CallButton
 import com.app.customerservice.modules.AudioProcessor
-import com.app.customerservice.ui.theme.CustomerServiceTheme
+import com.app.customerservice.presentation.theme.CustomerServiceTheme
 
 class MainActivity : ComponentActivity() {
 

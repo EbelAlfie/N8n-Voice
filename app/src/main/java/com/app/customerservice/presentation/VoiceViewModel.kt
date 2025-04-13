@@ -1,7 +1,11 @@
-package com.app.customerservice
+package com.app.customerservice.presentation
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import com.app.customerservice.presentation.CallState.Connected
+import com.app.customerservice.presentation.CallState.Connecting
+import com.app.customerservice.presentation.CallState.Error
+import com.app.customerservice.presentation.CallState.Idle
 import com.twilio.voice.Call
 import com.twilio.voice.CallException
 import com.twilio.voice.ConnectOptions
@@ -15,7 +19,7 @@ class VoiceViewModel(
   private val applicationContext: Context
 ): ViewModel(), Call.Listener {
 
-  private val _callState = MutableStateFlow<CallState>(CallState.Idle)
+  private val _callState = MutableStateFlow<CallState>(Idle)
   val callState: StateFlow<CallState> = _callState.asStateFlow()
 
   private val accessToken = ""
@@ -33,7 +37,7 @@ class VoiceViewModel(
   }
 
   override fun onConnectFailure(call: Call, callException: CallException) {
-    _callState.update { CallState.Error(callException) }
+    _callState.update { Error(callException) }
   }
 
   override fun onRinging(call: Call) {
@@ -41,11 +45,11 @@ class VoiceViewModel(
   }
 
   override fun onConnected(call: Call) {
-    _callState.update { CallState.Connected(call) }
+    _callState.update { Connected(call) }
   }
 
   override fun onReconnecting(call: Call, callException: CallException) {
-    _callState.update { CallState.Connecting }
+    _callState.update { Connecting }
   }
 
   override fun onReconnected(call: Call) {
@@ -53,6 +57,6 @@ class VoiceViewModel(
   }
 
   override fun onDisconnected(call: Call, callException: CallException?) {
-    _callState.update { CallState.Error(callException) }
+    _callState.update { Error(callException) }
   }
 }

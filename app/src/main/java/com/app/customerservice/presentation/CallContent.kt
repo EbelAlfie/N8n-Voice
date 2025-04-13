@@ -1,4 +1,4 @@
-package com.app.customerservice
+package com.app.customerservice.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,12 +15,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.app.customerservice.CallState.Connected
-import com.app.customerservice.CallState.Connecting
-import com.app.customerservice.CallState.Error
-import com.app.customerservice.component.CallButton
-import com.app.customerservice.component.DialogContent
+import com.app.customerservice.presentation.CallState.Connected
+import com.app.customerservice.presentation.CallState.Connecting
+import com.app.customerservice.presentation.CallState.Error
+import com.app.customerservice.presentation.component.CallButton
+import com.app.customerservice.presentation.component.DialogContent
 import com.app.customerservice.modules.AudioProcessor
+import com.app.customerservice.presentation.CallState.Idle
 import kotlinx.coroutines.delay
 
 @Composable
@@ -33,7 +34,7 @@ fun CallContent(
 
   LaunchedEffect(callState) {
     when (callState) {
-      !is CallState.Idle -> showDialog = true
+      !is Idle -> showDialog = true
       else -> return@LaunchedEffect
     }
     delay(5000L)

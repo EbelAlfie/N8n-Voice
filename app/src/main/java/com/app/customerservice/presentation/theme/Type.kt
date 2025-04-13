@@ -1,4 +1,4 @@
-package com.app.customerservice.ui.theme
+package com.app.customerservice.presentation.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

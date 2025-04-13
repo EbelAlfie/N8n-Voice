@@ -1,4 +1,4 @@
-package com.app.customerservice.component
+package com.app.customerservice.presentation.component
 
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text

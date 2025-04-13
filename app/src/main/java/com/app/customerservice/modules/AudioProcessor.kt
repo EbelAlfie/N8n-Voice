@@ -3,6 +3,8 @@ package com.app.customerservice.modules
 import android.Manifest.permission.RECORD_AUDIO
 import android.media.AudioFormat
 import android.media.AudioRecord
+import android.media.MediaCodec
+import android.media.MediaFormat
 import android.media.MediaRecorder.AudioSource
 import android.os.Environment
 import androidx.annotation.RequiresPermission
@@ -81,6 +83,16 @@ class AudioProcessor {
     } catch (error: Exception) {
       println("VIS LOG error output stream $error")
     }
+  }
+
+  private fun pcmToMp3() {
+    val mediaCodec = MediaCodec.createByCodecName("")
+    val mediaFormat = MediaFormat().apply {
+
+    }
+    mediaCodec.configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
+
+    mediaCodec.start()
   }
 
   fun stopRecording() {

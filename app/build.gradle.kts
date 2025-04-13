@@ -38,6 +38,7 @@ android {
 
 dependencies {
   implementation(libs.voice.android)
+  implementation(libs.stream.video.android.core)
 
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.lifecycle.runtime.ktx)
