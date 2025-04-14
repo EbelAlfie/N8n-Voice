@@ -1,4 +1,4 @@
-package com.app.customerservice.presentation
+package com.app.customerservice.presentation.main
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,13 +15,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.app.customerservice.presentation.CallState.Connected
-import com.app.customerservice.presentation.CallState.Connecting
-import com.app.customerservice.presentation.CallState.Error
-import com.app.customerservice.presentation.component.CallButton
-import com.app.customerservice.presentation.component.DialogContent
+import com.app.customerservice.presentation.main.CallState.Connected
+import com.app.customerservice.presentation.main.CallState.Connecting
+import com.app.customerservice.presentation.main.CallState.Error
+import com.app.customerservice.presentation.main.component.CallButton
+import com.app.customerservice.presentation.main.component.DialogContent
 import com.app.customerservice.modules.AudioProcessor
-import com.app.customerservice.presentation.CallState.Idle
+import com.app.customerservice.presentation.main.CallState.Idle
 import kotlinx.coroutines.delay
 
 @Composable

@@ -4,6 +4,7 @@ import android.Manifest.permission.RECORD_AUDIO
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaCodec
+import android.media.MediaCodec.BufferInfo
 import android.media.MediaFormat
 import android.media.MediaRecorder.AudioSource
 import android.os.Environment
@@ -13,10 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
-import java.nio.ByteBuffer
 import kotlin.math.abs
 import kotlin.math.log10
 
@@ -28,17 +26,31 @@ class AudioProcessor {
   private val AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT //Why not 16 bit?
 
   private var isRecording: Boolean = false
-
   private val defaultBufferSize =
     AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL, AUDIO_FORMAT) * 2
+
   private var audioRecorder: AudioRecord? = null
+  private var mediaCodec: MediaCodec? = null
 
   private var recordingJob: Job? = null
 
+  private fun createCodecDecoder(): MediaCodec {
+    return MediaCodec.createDecoderByType("audio/mp4a-latm").apply {
+      val mediaFormat = MediaFormat().apply {
+        setString(MediaFormat.KEY_MIME, "audio/mp4a-latm")
+        setInteger(MediaFormat.KEY_SAMPLE_RATE, SAMPLE_RATE)
+        setInteger(MediaFormat.KEY_CHANNEL_COUNT, 1)
+      }
+      configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
+    }
+  }
+
   @RequiresPermission(RECORD_AUDIO)
   fun recordAudio() {
-    audioRecorder =
-      AudioRecord(AudioSource.MIC, SAMPLE_RATE, CHANNEL, AUDIO_FORMAT, defaultBufferSize)
+    audioRecorder = AudioRecord(AudioSource.MIC, SAMPLE_RATE, CHANNEL, AUDIO_FORMAT, defaultBufferSize)
+    mediaCodec = createCodecDecoder().also {
+      it.start()
+    }
 
     startRecord()
   }
@@ -65,10 +77,18 @@ class AudioProcessor {
 
         val db = 20 * log10( (abs(audioData.get(0).toFloat()) /32768) / 20e-6f)
         println("VIS LOG ${len} ${db}")
-
       }
-      saveAudio(byteArray)
+
+      processAudio(byteArray)
     }
+  }
+
+  private fun processAudio(byteArray: ByteArray) {
+    val bufferInfo = BufferInfo()
+    val codecInputBuffers = mediaCodec?.dequeueInputBuffer()
+    val codecOutputBuffers = mediaCodec!!.outputBuffers
+//    val newByte = decodeToMp3(byteArray)
+    saveAudio(byteArray)
   }
 
   private fun saveAudio(buffer: ByteArray) {
@@ -83,16 +103,6 @@ class AudioProcessor {
     } catch (error: Exception) {
       println("VIS LOG error output stream $error")
     }
-  }
-
-  private fun pcmToMp3() {
-    val mediaCodec = MediaCodec.createByCodecName("")
-    val mediaFormat = MediaFormat().apply {
-
-    }
-    mediaCodec.configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
-
-    mediaCodec.start()
   }
 
   fun stopRecording() {

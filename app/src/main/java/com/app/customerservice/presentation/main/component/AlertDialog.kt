@@ -1,4 +1,4 @@
-package com.app.customerservice.presentation.component
+package com.app.customerservice.presentation.main.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import com.app.customerservice.presentation.CallState
+import com.app.customerservice.presentation.main.CallState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -1,11 +1,11 @@
-package com.app.customerservice.presentation
+package com.app.customerservice.presentation.main
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
-import com.app.customerservice.presentation.CallState.Connected
-import com.app.customerservice.presentation.CallState.Connecting
-import com.app.customerservice.presentation.CallState.Error
-import com.app.customerservice.presentation.CallState.Idle
+import com.app.customerservice.presentation.main.CallState.Connected
+import com.app.customerservice.presentation.main.CallState.Connecting
+import com.app.customerservice.presentation.main.CallState.Error
+import com.app.customerservice.presentation.main.CallState.Idle
 import com.twilio.voice.Call
 import com.twilio.voice.CallException
 import com.twilio.voice.ConnectOptions

@@ -1,4 +1,4 @@
-package com.app.customerservice.presentation
+package com.app.customerservice.presentation.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
