@@ -40,6 +40,9 @@ dependencies {
   implementation(libs.voice.android)
   implementation(libs.stream.video.android.core)
 
+  implementation(libs.retrofit)
+  implementation(libs.okhttp)
+
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.lifecycle.runtime.ktx)
   implementation(libs.androidx.activity.compose)

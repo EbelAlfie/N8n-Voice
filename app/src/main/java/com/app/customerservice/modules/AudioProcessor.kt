@@ -84,11 +84,20 @@ class AudioProcessor {
   }
 
   private fun processAudio(byteArray: ByteArray) {
-    val bufferInfo = BufferInfo()
-    val codecInputBuffers = mediaCodec?.dequeueInputBuffer()
-    val codecOutputBuffers = mediaCodec!!.outputBuffers
-//    val newByte = decodeToMp3(byteArray)
-    saveAudio(byteArray)
+    mediaCodec?.let {
+      val timeout = 15000L
+      val bufferInfo = BufferInfo()
+      val inputBufferIndex = it.dequeueInputBuffer(timeout)
+      val outputBufferIndex = it.dequeueOutputBuffer(bufferInfo, timeout)
+
+      val inputBuffer = it.getInputBuffer(inputBufferIndex)
+
+      inputBuffer?.clear()
+      inputBuffer?.put(byteArray)
+      it.queueInputBuffer(inputBufferIndex, 0, byteArray.size, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM)
+
+      saveAudio(byteArray)
+    }
   }
 
   private fun saveAudio(buffer: ByteArray) {
