@@ -5,10 +5,12 @@ import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaCodec
 import android.media.MediaCodec.BufferInfo
+import android.media.MediaCodecInfo.CodecProfileLevel
 import android.media.MediaFormat
 import android.media.MediaRecorder.AudioSource
 import android.os.Environment
 import androidx.annotation.RequiresPermission
+import com.app.customerservice.presentation.AacDecoder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -27,7 +29,7 @@ class AudioProcessor {
 
   private var isRecording: Boolean = false
   private val defaultBufferSize =
-    AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL, AUDIO_FORMAT) * 2
+    AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL, AUDIO_FORMAT)
 
   private var audioRecorder: AudioRecord? = null
   private var mediaCodec: MediaCodec? = null
@@ -35,11 +37,15 @@ class AudioProcessor {
   private var recordingJob: Job? = null
 
   private fun createCodecDecoder(): MediaCodec {
-    return MediaCodec.createDecoderByType("audio/mp4a-latm").apply {
+    val name = "audio/mp4a-latm"
+    return MediaCodec.createEncoderByType(name).apply {
       val mediaFormat = MediaFormat().apply {
-        setString(MediaFormat.KEY_MIME, "audio/mp4a-latm")
+        setString(MediaFormat.KEY_MIME, name)
         setInteger(MediaFormat.KEY_SAMPLE_RATE, SAMPLE_RATE)
         setInteger(MediaFormat.KEY_CHANNEL_COUNT, 1)
+        setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, defaultBufferSize)
+        setInteger(MediaFormat.KEY_BIT_RATE, 32000)
+        setInteger(MediaFormat.KEY_AAC_PROFILE, CodecProfileLevel.AACObjectLC)
       }
       configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
     }
@@ -47,7 +53,8 @@ class AudioProcessor {
 
   @RequiresPermission(RECORD_AUDIO)
   fun recordAudio() {
-    audioRecorder = AudioRecord(AudioSource.MIC, SAMPLE_RATE, CHANNEL, AUDIO_FORMAT, defaultBufferSize)
+    audioRecorder =
+      AudioRecord(AudioSource.MIC, SAMPLE_RATE, CHANNEL, AUDIO_FORMAT, defaultBufferSize)
     mediaCodec = createCodecDecoder().also {
       it.start()
     }
@@ -68,41 +75,71 @@ class AudioProcessor {
   private fun recordAudioBytes() {
     var recorderBytes = 0
     var byteArray = byteArrayOf()
-    while(isRecording) {
+    while (isRecording) {
       audioRecorder?.let {
         val audioData = ByteArray(defaultBufferSize)
         val len = it.read(audioData, 0, defaultBufferSize)
-        recorderBytes += len
-        byteArray += audioData
 
-        val db = 20 * log10( (abs(audioData.get(0).toFloat()) /32768) / 20e-6f)
-        println("VIS LOG ${len} ${db}")
+        val db = 20 * log10((abs(audioData.get(0).toFloat()) / 32768) / 20e-6f)
+
+        if (len >= 0) {
+          val processedAudio = processAudio(audioData)
+          if (processedAudio != null) {
+            recorderBytes += len
+            byteArray += processedAudio
+            println("VIS LOG LOcked and loaded")
+          }
+        }
+
       }
-
-      processAudio(byteArray)
     }
+    saveAudio(byteArray)
   }
 
-  private fun processAudio(byteArray: ByteArray) {
-    mediaCodec?.let {
+  private fun processAudio(byteArray: ByteArray): ByteArray? {
+    return mediaCodec?.let {
       val timeout = 15000L
-      val bufferInfo = BufferInfo()
+
       val inputBufferIndex = it.dequeueInputBuffer(timeout)
-      val outputBufferIndex = it.dequeueOutputBuffer(bufferInfo, timeout)
+      if (inputBufferIndex < 0) return@let null
 
       val inputBuffer = it.getInputBuffer(inputBufferIndex)
 
-      inputBuffer?.clear()
       inputBuffer?.put(byteArray)
-      it.queueInputBuffer(inputBufferIndex, 0, byteArray.size, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM)
+      it.queueInputBuffer(
+        inputBufferIndex,
+        0,
+        byteArray.size,
+        0,
+        MediaCodec.BUFFER_FLAG_END_OF_STREAM
+      )
 
-      saveAudio(byteArray)
-    }
+      val bufferInfo = BufferInfo()
+      val outputBufferIndex = it.dequeueOutputBuffer(bufferInfo, timeout)
+
+      if (outputBufferIndex < 0) return@let null
+      println("VIS LOG output $outputBufferIndex")
+
+      val outputBuffer = it.getOutputBuffer(outputBufferIndex)?.apply {
+        position(bufferInfo.offset)
+        limit(bufferInfo.offset + bufferInfo.size)
+      } ?: return@let null
+
+      return if ((bufferInfo.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != MediaCodec.BUFFER_FLAG_CODEC_CONFIG) {
+        val header: ByteArray = AacDecoder().getAdtsHeader(bufferInfo.size - bufferInfo.offset)
+
+        val data = ByteArray(outputBuffer.remaining())
+        outputBuffer.get(data)
+
+        header + data
+      } else null
+
+    } ?: return null
   }
 
   private fun saveAudio(buffer: ByteArray) {
     val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-    val fileName = "${dir.absolutePath}/audio.pcm"
+    val fileName = "${dir.absolutePath}/audio.aac"
     try {
       val outputStream = FileOutputStream(fileName)
       outputStream.write(buffer)

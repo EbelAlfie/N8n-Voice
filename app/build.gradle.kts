@@ -38,7 +38,6 @@ android {
 
 dependencies {
   implementation(libs.voice.android)
-  implementation(libs.stream.video.android.core)
 
   implementation(libs.retrofit)
   implementation(libs.okhttp)
