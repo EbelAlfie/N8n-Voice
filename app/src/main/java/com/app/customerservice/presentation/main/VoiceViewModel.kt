@@ -2,6 +2,8 @@ package com.app.customerservice.presentation.main
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import com.app.customerservice.di.Dependency
+import com.app.customerservice.domain.AiRepository
 import com.app.customerservice.presentation.main.CallState.Connected
 import com.app.customerservice.presentation.main.CallState.Connecting
 import com.app.customerservice.presentation.main.CallState.Error
@@ -10,23 +12,24 @@ import com.twilio.voice.Call
 import com.twilio.voice.CallException
 import com.twilio.voice.ConnectOptions
 import com.twilio.voice.Voice
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import javax.inject.Inject
 
-@HiltViewModel
-class VoiceViewModel @Inject constructor(
-  @ApplicationContext private val applicationContext: Context
+class VoiceViewModel (
+  private val applicationContext: Context,
+  private val aiRepository: AiRepository = Dependency.aiRepository
 ): ViewModel(), Call.Listener {
 
   private val _callState = MutableStateFlow<CallState>(Idle)
   val callState: StateFlow<CallState> = _callState.asStateFlow()
 
   private val accessToken = ""
+
+  fun sendAudioMessage() {
+    aiRepository.sendMessage()
+  }
 
   fun connectCall() {
     val params = HashMap<String, String>().apply {

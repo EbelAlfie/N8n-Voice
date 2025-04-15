@@ -94,8 +94,7 @@ class AudioProcessor {
       } ?: break
 
       if (!isRecording) {
-        mediaCodec?.stop()
-        mediaCodec?.release()
+        onRecordingStop()
         break
       }
     }
@@ -161,6 +160,11 @@ class AudioProcessor {
 
   fun stopRecording() {
     isRecording = false
+  }
+
+  private fun onRecordingStop() {
+    mediaCodec?.stop()
+    mediaCodec?.release()
     recordingJob?.cancel("Recording Stopped")
     audioRecorder?.stop()
   }

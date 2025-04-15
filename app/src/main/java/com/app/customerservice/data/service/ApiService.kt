@@ -4,7 +4,7 @@ import retrofit2.http.POST
 
 interface ApiService {
 
-  @POST("/message")
+  @POST("webhook-test/message")
   fun sendMessage()
 
 }
