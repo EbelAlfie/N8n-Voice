@@ -1,17 +1,8 @@
 package com.app.customerservice.presentation
 
-import android.media.AudioRecord.MetricsConstants.CHANNELS
 import android.media.MediaCodecInfo.CodecProfileLevel
 
-
-interface AudioDecoder {
-  fun decode(buffer: ByteArray)
-}
-
-class AacDecoder: AudioDecoder {
-  override fun decode(buffer: ByteArray) {
-
-  }
+class AacDecoder {
 
   fun getAdtsHeader(len: Int): ByteArray {
     val sampleRateIndex = 4

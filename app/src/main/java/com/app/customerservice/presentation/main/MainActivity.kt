@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.app.customerservice.modules.AudioProcessor
+import com.app.customerservice.presentation.modules.AudioProcessor
 import com.app.customerservice.presentation.theme.CustomerServiceTheme
 
 class MainActivity : ComponentActivity() {

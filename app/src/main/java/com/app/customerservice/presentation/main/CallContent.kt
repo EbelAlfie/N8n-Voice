@@ -20,7 +20,7 @@ import com.app.customerservice.presentation.main.CallState.Connecting
 import com.app.customerservice.presentation.main.CallState.Error
 import com.app.customerservice.presentation.main.component.CallButton
 import com.app.customerservice.presentation.main.component.DialogContent
-import com.app.customerservice.modules.AudioProcessor
+import com.app.customerservice.presentation.modules.AudioProcessor
 import com.app.customerservice.presentation.main.CallState.Idle
 import kotlinx.coroutines.delay
 

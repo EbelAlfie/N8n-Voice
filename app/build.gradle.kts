@@ -41,6 +41,7 @@ dependencies {
 
   implementation(libs.retrofit)
   implementation(libs.okhttp)
+  implementation(libs.gson)
 
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.lifecycle.runtime.ktx)
