@@ -75,23 +75,24 @@ class AudioProcessor {
   private fun recordAudioBytes() {
     var recorderBytes = 0
     var byteArray = byteArrayOf()
-    while (isRecording) {
+    while (true) {
       audioRecorder?.let {
-        val audioData = ByteArray(defaultBufferSize)
-        val len = it.read(audioData, 0, defaultBufferSize)
+        val audioData = ByteArray(1024)
+        val len = it.read(audioData, 0, 1024)
 
         val db = 20 * log10((abs(audioData.get(0).toFloat()) / 32768) / 20e-6f)
 
-        if (len >= 0) {
-          val processedAudio = processAudio(audioData)
-          if (processedAudio != null) {
-            recorderBytes += len
-            byteArray += processedAudio
-            println("VIS LOG LOcked and loaded")
-          }
+        println("VIS LOG ${len}")
+        if (len < 0) return@let
+
+        val processedAudio = processAudio(audioData)
+        if (processedAudio != null) {
+          recorderBytes += len
+          byteArray += processedAudio
         }
 
-      }
+      } ?: break
+      if (!isRecording) break
     }
     saveAudio(byteArray)
   }
@@ -104,37 +105,37 @@ class AudioProcessor {
       if (inputBufferIndex < 0) return@let null
 
       val inputBuffer = it.getInputBuffer(inputBufferIndex)
-
+      inputBuffer?.clear()
       inputBuffer?.put(byteArray)
       it.queueInputBuffer(
         inputBufferIndex,
         0,
         byteArray.size,
         0,
-        MediaCodec.BUFFER_FLAG_END_OF_STREAM
+        0
       )
 
       val bufferInfo = BufferInfo()
       val outputBufferIndex = it.dequeueOutputBuffer(bufferInfo, timeout)
 
       if (outputBufferIndex < 0) return@let null
-      println("VIS LOG output $outputBufferIndex")
 
       val outputBuffer = it.getOutputBuffer(outputBufferIndex)?.apply {
         position(bufferInfo.offset)
         limit(bufferInfo.offset + bufferInfo.size)
       } ?: return@let null
 
-      return if ((bufferInfo.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != MediaCodec.BUFFER_FLAG_CODEC_CONFIG) {
+      if ((bufferInfo.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != MediaCodec.BUFFER_FLAG_CODEC_CONFIG) {
         val header: ByteArray = AacDecoder().getAdtsHeader(bufferInfo.size - bufferInfo.offset)
-
         val data = ByteArray(outputBuffer.remaining())
         outputBuffer.get(data)
-
-        header + data
-      } else null
-
-    } ?: return null
+        it.releaseOutputBuffer(outputBufferIndex, false)
+        return@let header + data
+      } else {
+        it.releaseOutputBuffer(outputBufferIndex, false)
+        return@let null
+      }
+    }
   }
 
   private fun saveAudio(buffer: ByteArray) {
@@ -154,6 +155,7 @@ class AudioProcessor {
   fun stopRecording() {
     isRecording = false
     recordingJob?.cancel("Recording Stopped")
+    mediaCodec?.stop()
     audioRecorder?.stop()
   }
 
