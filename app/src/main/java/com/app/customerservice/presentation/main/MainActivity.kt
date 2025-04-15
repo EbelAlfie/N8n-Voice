@@ -4,12 +4,16 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import com.app.customerservice.modules.AudioProcessor
 import com.app.customerservice.presentation.theme.CustomerServiceTheme
+import dagger.hilt.EntryPoint
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-  private val viewModel: VoiceViewModel by lazy { VoiceViewModel(applicationContext) }
+  private val viewModel: VoiceViewModel by viewModels()
 
   private val audioProcessor by lazy { AudioProcessor() }
 

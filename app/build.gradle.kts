@@ -2,6 +2,8 @@ plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.android)
   alias(libs.plugins.kotlin.compose)
+  id("com.google.dagger.hilt.android")
+  id("kotlin-kapt")
 }
 
 android {
@@ -38,6 +40,9 @@ android {
 
 dependencies {
   implementation(libs.voice.android)
+
+  implementation(libs.hilt.android)
+  kapt(libs.hilt.android.compiler)
 
   implementation(libs.retrofit)
   implementation(libs.okhttp)
