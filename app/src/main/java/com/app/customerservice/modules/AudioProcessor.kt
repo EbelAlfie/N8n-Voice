@@ -92,7 +92,12 @@ class AudioProcessor {
         }
 
       } ?: break
-      if (!isRecording) break
+
+      if (!isRecording) {
+        mediaCodec?.stop()
+        mediaCodec?.release()
+        break
+      }
     }
     saveAudio(byteArray)
   }
@@ -120,21 +125,24 @@ class AudioProcessor {
 
       if (outputBufferIndex < 0) return@let null
 
-      val outputBuffer = it.getOutputBuffer(outputBufferIndex)?.apply {
-        position(bufferInfo.offset)
-        limit(bufferInfo.offset + bufferInfo.size)
-      } ?: return@let null
-
-      if ((bufferInfo.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != MediaCodec.BUFFER_FLAG_CODEC_CONFIG) {
-        val header: ByteArray = AacDecoder().getAdtsHeader(bufferInfo.size - bufferInfo.offset)
-        val data = ByteArray(outputBuffer.remaining())
-        outputBuffer.get(data)
+      return@let try {
+        val outputBuffer = it.getOutputBuffer(outputBufferIndex)?.apply {
+          position(bufferInfo.offset)
+          limit(bufferInfo.offset + bufferInfo.size)
+        } ?: return@let null
+        if ((bufferInfo.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != MediaCodec.BUFFER_FLAG_CODEC_CONFIG) {
+          val header: ByteArray = AacDecoder().getAdtsHeader(bufferInfo.size - bufferInfo.offset)
+          val data = ByteArray(outputBuffer.remaining())
+          outputBuffer.get(data)
+          header + data
+        } else null
+      } catch (e: Exception) {
+        println("VIS LOG decode error")
+        null
+      } finally {
         it.releaseOutputBuffer(outputBufferIndex, false)
-        return@let header + data
-      } else {
-        it.releaseOutputBuffer(outputBufferIndex, false)
-        return@let null
       }
+
     }
   }
 
@@ -154,7 +162,6 @@ class AudioProcessor {
   fun stopRecording() {
     isRecording = false
     recordingJob?.cancel("Recording Stopped")
-    mediaCodec?.stop()
     audioRecorder?.stop()
   }
 
