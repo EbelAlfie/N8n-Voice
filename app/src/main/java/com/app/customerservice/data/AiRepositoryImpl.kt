@@ -1,7 +1,9 @@
 package com.app.customerservice.data
 
-class AiRepositoryImpl {
-  fun sendAudio() {
+import com.app.customerservice.domain.AiRepository
+
+class AiRepositoryImpl: AiRepository {
+  override fun sendMessage() {
 
   }
 }

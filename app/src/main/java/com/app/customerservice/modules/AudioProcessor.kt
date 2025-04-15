@@ -146,7 +146,6 @@ class AudioProcessor {
       outputStream.write(buffer)
       outputStream.flush()
       outputStream.close()
-      println("VIS LOG FILE SAVED!")
     } catch (error: Exception) {
       println("VIS LOG error output stream $error")
     }
