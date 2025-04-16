@@ -2,7 +2,7 @@ package com.app.customerservice.data.model
 
 import com.google.gson.annotations.SerializedName
 
-open class Event(
+open class SocketEvent(
   @SerializedName("type")
   val type: String
 )
@@ -10,11 +10,11 @@ open class Event(
 data class IncomingCall(
   @SerializedName("from")
   val from: String
-): Event(type = "incoming.call")
+): SocketEvent(type = EventType.INCOMING_CALL)
 
 data class IncomingMessage(
   @SerializedName("from")
   val from: String,
   @SerializedName("content")
   val content: String
-): Event(type = "incoming.message")
+): SocketEvent(type = EventType.INCOMING_MESSAGE)
