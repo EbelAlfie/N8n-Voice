@@ -1,4 +1,4 @@
-package com.app.customerservice.data.model
+package com.app.customerservice.data.event
 
 object EventType {
 

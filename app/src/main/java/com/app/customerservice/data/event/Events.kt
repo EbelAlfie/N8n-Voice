@@ -1,4 +1,4 @@
-package com.app.customerservice.data.model
+package com.app.customerservice.data.event
 
 import com.google.gson.annotations.SerializedName
 

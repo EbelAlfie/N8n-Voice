@@ -1,7 +1,8 @@
 package com.app.customerservice.data.socket
 
-import com.app.customerservice.data.model.SocketEvent
-import com.app.customerservice.data.model.SocketMessage
+import com.app.customerservice.data.event.EventHandler
+import com.app.customerservice.data.event.SocketEvent
+import com.app.customerservice.data.event.SocketMessage
 import com.app.customerservice.di.HttpClient
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -12,11 +13,15 @@ import okio.ByteString
 import java.nio.charset.Charset
 
 class SocketService: WebSocketListener() {
-  private val webSocket: WebSocket by lazy { HttpClient.provideWebSocket(this) }
+  private var webSocket: WebSocket? = null
 
   private val _eventFlow = MutableSharedFlow<SocketMessage<SocketEvent>>(replay = 1)
 
   private val eventHandler = EventHandler()
+
+  fun openConnection() {
+    webSocket = HttpClient.provideWebSocket(this)
+  }
 
   override fun onOpen(webSocket: WebSocket, response: Response) {
     super.onOpen(webSocket, response)
@@ -49,7 +54,7 @@ class SocketService: WebSocketListener() {
     //TODO
   }
 
-  fun send(text: String) = webSocket.send(text)
+  fun send(text: String) = webSocket?.send(text)
 
   fun listen() = _eventFlow.asSharedFlow()
 

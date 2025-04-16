@@ -1,11 +1,11 @@
-package com.app.customerservice.data.model
+package com.app.customerservice.data.event
 
 sealed interface SocketMessage<out T> {
   data class EventMessage<T>(
-    private val message: T
+    val message: T
   ): SocketMessage<T>
 
   data class Error(
-    private val error: Throwable
+    val error: Throwable
   ): SocketMessage<Nothing>
 }

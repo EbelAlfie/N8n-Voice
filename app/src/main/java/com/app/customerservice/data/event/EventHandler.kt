@@ -1,8 +1,5 @@
-package com.app.customerservice.data.socket
+package com.app.customerservice.data.event
 
-import com.app.customerservice.data.model.IncomingCall
-import com.app.customerservice.data.model.IncomingMessage
-import com.app.customerservice.data.model.SocketEvent
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
