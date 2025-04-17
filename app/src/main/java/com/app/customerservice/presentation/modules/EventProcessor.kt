@@ -6,13 +6,13 @@ import com.app.customerservice.data.socket.SocketService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 
-typealias ListenerType = (SocketEvent) -> Unit
 
 class EventProcessor(
   private val socketService: SocketService = SocketService()
 ) {
-  private val eventListener = mutableSetOf<Class<SocketEvent>>()
+  private val eventListener = mutableSetOf<EventListener<SocketEvent>>()
 
   fun openConnection() {
     socketService.openConnection()
@@ -22,7 +22,7 @@ class EventProcessor(
     scope.launch {
       socketService.listen().collectLatest {
         when (it) {
-          is SocketMessage.EventMessage -> onEvent(it.message)
+          is SocketMessage.Event -> onEvent(it.message)
           is SocketMessage.Error -> {}
         }
       }
@@ -30,10 +30,33 @@ class EventProcessor(
   }
 
   private fun onEvent(event: SocketEvent) {
-
+    eventListener.forEach { listener -> listener.onEvent(event) }
   }
 
-  fun addEventListener(newListener: ListenerType, type: Class<SocketEvent>) {
-    eventListener
+  fun addEventListener(onEvent: (SocketEvent) -> Unit) {
+    eventListener.add(object: EventListener<SocketEvent> {
+      override fun onEvent(event: SocketEvent) { onEvent(event) }
+    })
   }
+
+  fun addEventListener(eventType: Class<SocketEvent>, onEvent: (SocketEvent) -> Unit) {
+    val filter = { event: SocketEvent -> event.javaClass == eventType }
+
+    eventListener.add(object: EventListener<SocketEvent> {
+      override fun onEvent(event: SocketEvent) {
+        if (filter(event)) onEvent(event)
+      }
+    })
+  }
+
+  fun addEventListener(vararg events: Class<out SocketEvent>, onEvent: (SocketEvent) -> Unit) {
+    val filter = { event: SocketEvent -> event.javaClass in events }
+
+    eventListener.add(object: EventListener<SocketEvent> {
+      override fun onEvent(event: SocketEvent) {
+        if (filter(event)) onEvent(event)
+      }
+    })
+  }
+
 }

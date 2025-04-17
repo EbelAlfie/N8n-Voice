@@ -30,13 +30,13 @@ class SocketService: WebSocketListener() {
   override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
     super.onMessage(webSocket, bytes)
     val message = parseMessage(bytes.string(Charset.defaultCharset()))
-    _eventFlow.tryEmit(SocketMessage.EventMessage(message))
+    _eventFlow.tryEmit(SocketMessage.Event(message))
   }
 
   override fun onMessage(webSocket: WebSocket, text: String) {
     super.onMessage(webSocket, text)
     val message = parseMessage(text)
-    _eventFlow.tryEmit(SocketMessage.EventMessage(message))
+    _eventFlow.tryEmit(SocketMessage.Event(message))
   }
 
   override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {

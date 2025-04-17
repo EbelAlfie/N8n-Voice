@@ -1,7 +1,7 @@
 package com.app.customerservice.data.event
 
 sealed interface SocketMessage<out T> {
-  data class EventMessage<T>(
+  data class Event<T>(
     val message: T
   ): SocketMessage<T>
 
