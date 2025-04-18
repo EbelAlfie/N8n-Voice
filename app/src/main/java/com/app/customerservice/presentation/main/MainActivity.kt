@@ -9,7 +9,7 @@ import com.app.customerservice.presentation.theme.CustomerServiceTheme
 
 class MainActivity : ComponentActivity() {
 
-  private val viewModel: VoiceViewModel by lazy { VoiceViewModel(applicationContext) }
+  private val viewModel: VoiceViewModel by lazy { VoiceViewModel() }
 
   private val audioProcessor by lazy { AudioProcessor() }
 
@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
     enableEdgeToEdge()
     setContent {
       CustomerServiceTheme {
-        CallContent(viewModel, audioProcessor)
+        MainScreen(viewModel, audioProcessor)
       }
     }
   }

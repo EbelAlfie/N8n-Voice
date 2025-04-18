@@ -15,7 +15,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.io.File
 import java.io.FileOutputStream
 import kotlin.math.abs
 import kotlin.math.log10
@@ -26,6 +28,8 @@ class AudioProcessor {
   private val SAMPLE_RATE = 44100 //sample rate 44100Hz
   private val CHANNEL = AudioFormat.CHANNEL_IN_DEFAULT //All dev mono??
   private val AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT //Why not 16 bit?
+
+  private val fileState = MutableStateFlow<File?>(null)
 
   private var isRecording: Boolean = false
   private val defaultBufferSize =
@@ -82,7 +86,7 @@ class AudioProcessor {
 
         val db = 20 * log10((abs(audioData.get(0).toFloat()) / 32768) / 20e-6f)
 
-        println("VIS LOG ${len}")
+        println("VIS LOG $len")
         if (len < 0) return@let
 
         val processedAudio = processAudio(audioData)
@@ -98,6 +102,7 @@ class AudioProcessor {
         break
       }
     }
+
     saveAudio(byteArray)
   }
 

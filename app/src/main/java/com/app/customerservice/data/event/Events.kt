@@ -12,6 +12,8 @@ data class IncomingCall(
   val from: String
 ): SocketEvent(type = EventType.INCOMING_CALL)
 
+data object TriggerCallCreation: SocketEvent(type = EventType.CREATE_CALL)
+
 data class IncomingMessage(
   @SerializedName("from")
   val from: String,

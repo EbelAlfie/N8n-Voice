@@ -4,4 +4,5 @@ object EventType {
 
   const val INCOMING_CALL: String = "incoming.call"
   const val INCOMING_MESSAGE : String = "incoming.message"
+  const val CREATE_CALL : String = "call.create"
 }
