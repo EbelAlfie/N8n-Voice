@@ -6,8 +6,6 @@ import com.app.customerservice.data.socket.SocketService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-
 
 class EventProcessor(
   private val socketService: SocketService = SocketService()

@@ -1,14 +1,14 @@
 package com.app.customerservice.data.service
 
-import okhttp3.RequestBody
+import com.app.customerservice.domain.MessageRequest
 import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface ApiService {
 
-  @POST("webhook-test/message")
-  fun sendMessage(
-    @Body body: RequestBody
-  )
+  @POST("webhook-test/send")
+  suspend fun sendMessage(
+    @Body body: MessageRequest
+  ): MessageRequest
 
 }

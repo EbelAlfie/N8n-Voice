@@ -53,6 +53,8 @@ dependencies {
 
   implementation(libs.stream.video.android.core)
 
+  implementation(libs.logging.interceptor)
+  implementation(libs.converter.gson)
   implementation(libs.retrofit)
   implementation(libs.okhttp)
   implementation(libs.gson)

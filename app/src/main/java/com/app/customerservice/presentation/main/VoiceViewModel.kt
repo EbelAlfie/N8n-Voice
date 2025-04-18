@@ -13,6 +13,7 @@ import io.getstream.video.android.core.StreamVideo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -27,23 +28,29 @@ class VoiceViewModel(
 
   init {
     socketClient.openConnection()
+    observeMessages()
   }
 
-  fun observeMessages() {
+  private fun observeMessages() {
     subscribeEvents()
     socketClient.observeMessages(viewModelScope)
   }
 
-  fun sendAudioMessage() {
-    aiRepository.sendMessage()
+  fun sendAudioMessage(message: String) {
+    viewModelScope.launch {
+      aiRepository.sendMessage(message).collectLatest {
+
+      }
+    }
   }
 
   private fun subscribeEvents() {
     socketClient.addEventListener {
       when (it) {
-        is IncomingCall -> {}
+        is IncomingCall ->
+          println("INCUMING")
         is TriggerCallCreation -> joinCSCall()
-        is IncomingMessage -> {}
+        is IncomingMessage -> println("INCUMING MES")
       }
     }
   }
