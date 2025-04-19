@@ -4,7 +4,7 @@ import io.getstream.video.android.core.Call
 
 sealed class CallState {
 
-  data object Idle: CallState()
+  data class CallingAI(val responseMsg: String = ""): CallState()
 
   data class CallingCustomerService(val call: Call): CallState()
 

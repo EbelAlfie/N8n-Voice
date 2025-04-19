@@ -19,7 +19,7 @@ import com.app.customerservice.presentation.call.CallContent
 import com.app.customerservice.presentation.call.HumanCallScreen
 import com.app.customerservice.presentation.main.CallState.CallingCustomerService
 import com.app.customerservice.presentation.main.CallState.Error
-import com.app.customerservice.presentation.main.CallState.Idle
+import com.app.customerservice.presentation.main.CallState.CallingAI
 import com.app.customerservice.presentation.main.component.CallButton
 import com.app.customerservice.presentation.modules.AudioProcessor
 import io.getstream.video.android.core.StreamVideo
@@ -32,8 +32,8 @@ fun MainScreen(
   val callState by viewModel.callState.collectAsState()
 
   when (callState) {
-    is Idle ->
-      AiCallScreen(viewModel)
+    is CallingAI ->
+      AiCallScreen(callState as CallingAI, viewModel)
     is CallingCustomerService ->
       HumanCallScreen((callState as CallingCustomerService).call, viewModel)
     is Error -> Button(onClick = viewModel::refresh) { Text(text = "Failed") }

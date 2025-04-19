@@ -31,7 +31,7 @@ class VoiceViewModel(
   private val aiRepository: AiRepository = Dependency.aiRepository
 ) : ViewModel() {
 
-  private val _callState = MutableStateFlow<CallState>(CallState.Idle)
+  private val _callState = MutableStateFlow<CallState>(CallState.CallingAI())
   val callState: StateFlow<CallState> = _callState.asStateFlow()
 
   init {
@@ -57,7 +57,7 @@ class VoiceViewModel(
       when (it) {
         is IncomingCall -> println("INCUMING ${it}")
         is TriggerCallCreation -> joinCSCall()
-        is IncomingMessage -> println("INCUMING MES ${it}")
+        is IncomingMessage -> updateCallState { CallState.CallingAI(it.message) }
       }
     }
   }
@@ -73,7 +73,7 @@ class VoiceViewModel(
     }
   }
 
-  fun refresh() = updateCallState { CallState.Idle }
+  fun refresh() = updateCallState { CallState.CallingAI() }
 
   private fun joinCSCall() {
     val streamVideo = StreamVideo.instanceOrNull() ?: return //TODO enhance
@@ -99,10 +99,10 @@ class VoiceViewModel(
     viewModelScope.launch {
       (_callState.value as? CallState.CallingCustomerService)?.call?.end()
         ?.onSuccess {
-          updateCallState { CallState.Idle }
+          updateCallState { CallState.CallingAI() }
         }
         ?.onError {
-          updateCallState { CallState.Idle }
+          updateCallState { CallState.CallingAI() }
         }
     }
   }
