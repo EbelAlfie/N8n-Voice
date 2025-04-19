@@ -9,6 +9,14 @@ import com.app.customerservice.di.Dependency
 import com.app.customerservice.domain.AiRepository
 import com.app.customerservice.presentation.modules.EventProcessor
 import io.getstream.result.extractCause
+import io.getstream.video.android.core.Call
+import io.getstream.video.android.core.RingingState
+import io.getstream.video.android.core.RingingState.Active
+import io.getstream.video.android.core.RingingState.Idle
+import io.getstream.video.android.core.RingingState.Incoming
+import io.getstream.video.android.core.RingingState.Outgoing
+import io.getstream.video.android.core.RingingState.RejectedByAll
+import io.getstream.video.android.core.RingingState.TimeoutNoAnswer
 import io.getstream.video.android.core.StreamVideo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -54,6 +62,19 @@ class VoiceViewModel(
     }
   }
 
+  private suspend fun observeCallState(ringingState: StateFlow<RingingState>) = ringingState.collectLatest {
+    when(it) {
+      is Incoming -> {}
+      is Outgoing -> {}
+      Active -> {}
+      Idle -> {}
+      RejectedByAll -> {}
+      TimeoutNoAnswer -> {}
+    }
+  }
+
+  fun refresh() = updateCallState { CallState.Idle }
+
   private fun joinCSCall() {
     val streamVideo = StreamVideo.instanceOrNull() ?: return //TODO enhance
     val callId = UUID.randomUUID().toString()
@@ -61,22 +82,22 @@ class VoiceViewModel(
 
     streamVideo.state.activeCall.value?.leave()
 
-    updateCallState { CallState.Dialing }
-
     viewModelScope.launch {
       call.join(true)
         .onSuccess {
-          updateCallState { CallState.Connected(call) }
+          updateCallState { CallState.CallingCustomerService(call) }
         }
         .onError {
           updateCallState { CallState.Error(it.extractCause()) }
         }
+
+      observeCallState(call.state.ringingState)
     }
   }
 
-  private fun endCSCall() {
+  fun endCSCall() {
     viewModelScope.launch {
-      (_callState.value as? CallState.Connected)?.call?.end()
+      (_callState.value as? CallState.CallingCustomerService)?.call?.end()
         ?.onSuccess {
           updateCallState { CallState.Idle }
         }
@@ -85,6 +106,10 @@ class VoiceViewModel(
         }
     }
   }
+
+  fun acceptCSCall(call: Call) { viewModelScope.launch { call.accept() } }
+
+  fun rejectCSCall(call: Call) { viewModelScope.launch { call.reject() } }
 
   private fun updateCallState(newState: CallState.() -> CallState) {
     _callState.update { newState.invoke(it) }

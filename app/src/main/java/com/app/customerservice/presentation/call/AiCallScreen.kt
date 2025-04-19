@@ -13,13 +13,11 @@ import androidx.compose.ui.Modifier
 import com.app.customerservice.presentation.main.VoiceViewModel
 import com.app.customerservice.presentation.main.component.CallButton
 import com.app.customerservice.presentation.main.component.rememberSpeechToTextIntent
-import com.app.customerservice.presentation.modules.AudioProcessor
 import com.app.customerservice.presentation.theme.VoiceLogo
 
 @Composable
 fun AiCallScreen(
-  viewModel: VoiceViewModel,
-  audioProcessor: AudioProcessor
+  viewModel: VoiceViewModel
 ) {
   val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
     if (it.resultCode != Activity.RESULT_OK) return@rememberLauncherForActivityResult
