@@ -1,6 +1,6 @@
 package com.app.customerservice.data.socket
 
-import com.app.customerservice.data.event.EventHandler
+import com.app.customerservice.data.event.EventParser
 import com.app.customerservice.data.event.SocketEvent
 import com.app.customerservice.data.event.SocketMessage
 import com.app.customerservice.di.HttpClient
@@ -17,7 +17,7 @@ class SocketService: WebSocketListener() {
 
   private val _eventFlow = MutableSharedFlow<SocketMessage<SocketEvent>>(replay = 1)
 
-  private val eventHandler = EventHandler()
+  private val eventParser = EventParser()
 
   fun openConnection() {
     webSocket = HttpClient.provideWebSocket(this)
@@ -29,6 +29,7 @@ class SocketService: WebSocketListener() {
 
   override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
     super.onMessage(webSocket, bytes)
+    println("Raw message ${bytes}")
     val message = parseMessage(bytes.string(Charset.defaultCharset()))
     _eventFlow.tryEmit(SocketMessage.Event(message))
   }
@@ -36,6 +37,7 @@ class SocketService: WebSocketListener() {
   override fun onMessage(webSocket: WebSocket, text: String) {
     super.onMessage(webSocket, text)
     val message = parseMessage(text)
+    println("message ${message}")
     _eventFlow.tryEmit(SocketMessage.Event(message))
   }
 
@@ -59,7 +61,7 @@ class SocketService: WebSocketListener() {
   fun listen() = _eventFlow.asSharedFlow()
 
   private fun parseMessage(text: String): SocketEvent {
-    val parsedEvent = eventHandler.parseEvent(text)
+    val parsedEvent = eventParser.parseEvent(text)
     return parsedEvent
   }
 }

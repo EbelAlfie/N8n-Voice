@@ -16,7 +16,7 @@ class AiRepositoryImpl(
       emit(ApiResult.Loading)
       try {
         val request = MessageRequest(
-          from = App.CUST_ID,
+          uid = App.CUST_ID,
           message = message
         )
         val response = apiService.sendMessage(request)

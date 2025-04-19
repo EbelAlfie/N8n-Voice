@@ -29,14 +29,14 @@ object HttpClient {
   private val retrofit: Retrofit by lazy {
     Retrofit.Builder()
       .client(okHttpClient)
-      .baseUrl("http://192.168.67.13:5678/")
+      .baseUrl("http://192.168.12.13:5678/")
       .addConverterFactory(GsonConverterFactory.create(Gson()))
       .build()
   }
 
   fun provideWebSocket(socketListener: WebSocketListener): WebSocket {
     val request = Request.Builder()
-      .url("ws://192.168.67.13:3001/ws?uid=${App.CUST_ID}")
+      .url("ws://192.168.12.13:3001/ws?uid=${App.CUST_ID}")
       .build()
     return okHttpClient.newWebSocket(request, socketListener)
   }

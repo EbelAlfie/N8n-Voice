@@ -4,7 +4,8 @@ import com.app.customerservice.data.event.SocketEvent
 import com.app.customerservice.data.event.SocketMessage
 import com.app.customerservice.data.socket.SocketService
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class EventProcessor(
@@ -17,14 +18,13 @@ class EventProcessor(
   }
 
   fun observeMessages(scope: CoroutineScope) {
-    scope.launch {
-      socketService.listen().collectLatest {
-        when (it) {
-          is SocketMessage.Event -> onEvent(it.message)
-          is SocketMessage.Error -> {}
-        }
+    socketService.listen().onEach {
+      println("it ${it}")
+      when (it) {
+        is SocketMessage.Event -> onEvent(it.message)
+        is SocketMessage.Error -> {}
       }
-    }
+    }.launchIn(scope)
   }
 
   private fun onEvent(event: SocketEvent) {
@@ -32,15 +32,17 @@ class EventProcessor(
   }
 
   fun addEventListener(onEvent: (SocketEvent) -> Unit) {
-    eventListener.add(object: EventListener<SocketEvent> {
-      override fun onEvent(event: SocketEvent) { onEvent(event) }
+    eventListener.add(object : EventListener<SocketEvent> {
+      override fun onEvent(event: SocketEvent) {
+        onEvent(event)
+      }
     })
   }
 
   fun addEventListener(eventType: Class<SocketEvent>, onEvent: (SocketEvent) -> Unit) {
     val filter = { event: SocketEvent -> event.javaClass == eventType }
 
-    eventListener.add(object: EventListener<SocketEvent> {
+    eventListener.add(object : EventListener<SocketEvent> {
       override fun onEvent(event: SocketEvent) {
         if (filter(event)) onEvent(event)
       }
@@ -50,7 +52,7 @@ class EventProcessor(
   fun addEventListener(vararg events: Class<out SocketEvent>, onEvent: (SocketEvent) -> Unit) {
     val filter = { event: SocketEvent -> event.javaClass in events }
 
-    eventListener.add(object: EventListener<SocketEvent> {
+    eventListener.add(object : EventListener<SocketEvent> {
       override fun onEvent(event: SocketEvent) {
         if (filter(event)) onEvent(event)
       }

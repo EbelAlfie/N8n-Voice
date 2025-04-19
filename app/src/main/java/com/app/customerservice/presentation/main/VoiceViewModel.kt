@@ -47,10 +47,9 @@ class VoiceViewModel(
   private fun subscribeEvents() {
     socketClient.addEventListener {
       when (it) {
-        is IncomingCall ->
-          println("INCUMING")
+        is IncomingCall -> println("INCUMING ${it}")
         is TriggerCallCreation -> joinCSCall()
-        is IncomingMessage -> println("INCUMING MES")
+        is IncomingMessage -> println("INCUMING MES ${it}")
       }
     }
   }

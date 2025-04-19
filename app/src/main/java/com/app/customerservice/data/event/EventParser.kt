@@ -3,7 +3,7 @@ package com.app.customerservice.data.event
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-class EventHandler {
+class EventParser {
   private val gson = Gson()
 
   fun parseEvent(text: String): SocketEvent {
@@ -15,9 +15,9 @@ class EventHandler {
   }
 
   private fun getEventClass(event: SocketEvent): TypeToken<out SocketEvent>? {
-    return when(event) {
-      is IncomingCall -> object: TypeToken<IncomingCall>() {}
-      is IncomingMessage -> object:  TypeToken<IncomingMessage>() {}
+    return when(event.type) {
+      EventType.CREATE_CALL -> object: TypeToken<IncomingCall>() {}
+      EventType.INCOMING_MESSAGE -> object:  TypeToken<IncomingMessage>() {}
       else -> null
     }
   }
