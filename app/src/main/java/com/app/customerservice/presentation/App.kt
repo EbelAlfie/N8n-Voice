@@ -30,8 +30,13 @@ class App: Application() {
 
   companion object {
     val User: UserModel = UserModel(
-      id = "cacing",
-      userName = "Cacing Tanah"
+      id = "customer-service",
+      userName = "Customer Service"
     )
+
+//    UserModel(
+//      id = "cacing",
+//      userName = "Cacing Tanah"
+//    )
   }
 }

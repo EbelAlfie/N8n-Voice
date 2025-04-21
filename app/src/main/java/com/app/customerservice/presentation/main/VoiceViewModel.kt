@@ -89,7 +89,8 @@ class VoiceViewModel(
         create = true,
         createOptions = CreateCallOptions(
           memberIds = listOf("customer-service")
-        )
+        ),
+        ring = true
       )
         .onSuccess {
           updateCallState { CallState.CallingCustomerService(call) }

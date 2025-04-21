@@ -48,7 +48,7 @@ fun MainScreen(
   StreamVideoProvider { streamVideo ->
     val ringingCall by streamVideo.state.ringingCall.collectAsState()
     ringingCall?.let { //Has ringing call
-      if (it.user.id != App.User.id) CallContent(it, viewModel)
+      HumanCallScreen(it, viewModel)
     }
   }
 }
