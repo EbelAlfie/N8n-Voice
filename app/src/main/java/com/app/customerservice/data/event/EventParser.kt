@@ -16,8 +16,9 @@ class EventParser {
 
   private fun getEventClass(event: SocketEvent): TypeToken<out SocketEvent>? {
     return when(event.type) {
-      EventType.CREATE_CALL -> object: TypeToken<IncomingCall>() {}
+      EventType.CREATE_CALL -> object: TypeToken<TriggerCallCreation>() {}
       EventType.INCOMING_MESSAGE -> object:  TypeToken<IncomingMessage>() {}
+      EventType.INCOMING_CALL -> object: TypeToken<IncomingCall>() {}
       else -> null
     }
   }

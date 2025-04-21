@@ -4,7 +4,7 @@ import com.app.customerservice.data.model.ApiResult
 import com.app.customerservice.data.service.ApiService
 import com.app.customerservice.domain.AiRepository
 import com.app.customerservice.domain.MessageRequest
-import com.app.customerservice.presentation.App
+import com.app.customerservice.presentation.App.Companion.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -16,7 +16,7 @@ class AiRepositoryImpl(
       emit(ApiResult.Loading)
       try {
         val request = MessageRequest(
-          uid = App.CUST_ID,
+          uid = User.id,
           message = message
         )
         val response = apiService.sendMessage(request)

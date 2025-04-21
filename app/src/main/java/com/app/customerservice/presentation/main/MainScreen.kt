@@ -36,13 +36,19 @@ fun MainScreen(
       AiCallScreen(callState as CallingAI, viewModel)
     is CallingCustomerService ->
       HumanCallScreen((callState as CallingCustomerService).call, viewModel)
-    is Error -> Button(onClick = viewModel::refresh) { Text(text = "Failed") }
+    is Error -> Column(
+      modifier = Modifier.fillMaxSize(),
+      horizontalAlignment = Alignment.CenterHorizontally,
+      verticalArrangement = Arrangement.Center
+    ) {
+      Button(onClick = viewModel::refresh) { Text(text = "Failed") }
+    }
   }
 
   StreamVideoProvider { streamVideo ->
     val ringingCall by streamVideo.state.ringingCall.collectAsState()
     ringingCall?.let { //Has ringing call
-      if (it.user.id != App.CUST_ID) CallContent(it, viewModel)
+      if (it.user.id != App.User.id) CallContent(it, viewModel)
     }
   }
 }

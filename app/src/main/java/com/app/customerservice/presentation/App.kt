@@ -2,6 +2,7 @@ package com.app.customerservice.presentation
 
 import android.app.Application
 import com.app.customerservice.BuildConfig
+import com.app.customerservice.domain.model.UserModel
 import io.getstream.video.android.core.StreamVideo
 import io.getstream.video.android.core.StreamVideoBuilder
 import io.getstream.video.android.model.User
@@ -12,8 +13,8 @@ class App: Application() {
     super.onCreate()
 
     val user = User(
-      id = "cacing",
-      name = "Cacing Tanah"
+      id = User.id,
+      name = User.userName
     )
 
     val token = ""
@@ -28,6 +29,9 @@ class App: Application() {
   }
 
   companion object {
-    const val CUST_ID = "cacing"
+    val User: UserModel = UserModel(
+      id = "cacing",
+      userName = "Cacing Tanah"
+    )
   }
 }
