@@ -15,6 +15,7 @@ import com.app.customerservice.presentation.main.VoiceViewModel
 import com.app.customerservice.presentation.main.component.CallButton
 import com.app.customerservice.presentation.main.component.rememberSpeechToTextIntent
 import com.app.customerservice.presentation.main.component.rememberTextToSpeech
+import com.app.customerservice.presentation.modules.rememberGoogleTextToSpeech
 import com.app.customerservice.presentation.theme.VoiceLogo
 
 @Composable
@@ -22,14 +23,7 @@ fun AiCallScreen(
   callState: CallState.CallingAI,
   viewModel: VoiceViewModel
 ) {
-  val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-    if (it.resultCode != Activity.RESULT_OK) return@rememberLauncherForActivityResult
-
-    val data = it.data?.extras ?: return@rememberLauncherForActivityResult
-    val result: ArrayList<String> = data.getStringArrayList(RecognizerIntent.EXTRA_RESULTS) ?: return@rememberLauncherForActivityResult
-
-    viewModel.sendAudioMessage(result[0])
-  }
+  val launcher = rememberGoogleTextToSpeech { result -> viewModel.sendAudioMessage(result[0]) }
 
   val sttIntent = rememberSpeechToTextIntent()
 
@@ -42,6 +36,7 @@ fun AiCallScreen(
     VoiceLogo()
 
     CallButton(text = "Talk") { launcher.launch(sttIntent) }
+
   }
 
   if (callState.responseMsg.isNotBlank()) rememberTextToSpeech(callState.responseMsg)
